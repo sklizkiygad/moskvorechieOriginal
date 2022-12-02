@@ -1,0 +1,80 @@
+@import "./form-login.css";
+@import "./form-registration.css";
+@import "./profile-card.css";
+@import "./header-sidebar.css";
+@import "./breadcrumbs.css";
+@import "./modal.css";
+@import "./create-template.css";
+@import "./table-template.css";
+@import "./search-input.css";
+@import "./shimmer-placeholder.css";
+
+* {
+    padding: 0;
+    margin: 0;
+    word-wrap: break-word;
+    font-family: Roboto,sans-serif;
+}
+
+.page-style{
+    display: flex;
+    gap: 50px;
+    width: calc(100% - 50px);
+    transition: 1s;
+    transition-delay: 1.5s;
+}
+
+.page-style.hidden{
+    transition: 0.5s;
+    width: calc(70% - 15px);
+}
+
+.page-heading{
+    font-size: 23px;
+    font-weight: 300;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.page-style__right{
+    width: calc(100% - 95px);
+    padding-right: 50px;
+    overflow-x: hidden;
+}
+
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+ul::-webkit-scrollbar
+{
+    width: 5px;
+}
+
+body::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb,
+ul::-webkit-scrollbar-thumb
+{
+    background: #6658d3;
+    border-radius: 20px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+
+@media (max-width: 547px) {
+    .page-style{
+        gap: 0;
+        width: 100%;
+        padding-right: 0;
+    }
+    .page-style__right{
+        width: calc(100% - 20px);
+        padding: 0 10px;
+    }
+}

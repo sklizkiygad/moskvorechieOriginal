@@ -1,0 +1,195 @@
+body{
+    background-color: #f1f3fb;
+}
+
+input {
+    appearance: none;
+    border-radius: 0;
+}
+
+.form-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.form-container h3{
+    text-align: center;
+    color: #6658d3;
+}
+
+.form-container__card {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 1.5rem);
+    height: 90%;
+    max-width: 425px;
+    background-color: #FFF;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px 0 rgba(153, 153, 153, 0.25);
+    padding: 0.75rem;
+    overflow-y: auto;
+}
+.card-heading {
+    position: absolute;
+    left: 10%;
+    top: 15%;
+    right: 10%;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #735400;
+    line-height: 1.222;
+}
+.card-heading small {
+    display: block;
+    font-size: 0.75em;
+    font-weight: 400;
+    margin-top: 0.25em;
+}
+.form-container__card__form {
+    padding: 2rem 1rem 0;
+}
+.form-container__card__form__input {
+    display: flex;
+    flex-direction: column-reverse;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.form-container__card__form__select{
+    display: flex;
+    flex-direction: column-reverse;
+    position: relative;
+    padding: 1.5rem 0;
+}
+
+.form-container__card__form__select select{
+    outline: none;
+    border: none;
+    border-bottom: 2px solid #eee;
+    font-size: 1.125rem;
+    margin-top: 10px;
+}
+
+.form-container__card__form__input + .form-container__card__form__input {
+    margin-top: 1.5rem;
+}
+.input-label {
+    color: #8597a3;
+    position: absolute;
+    /*top: 1.5rem;*/
+    transition: 0.25s ease;
+}
+
+.select-label{
+    color: #8597a3;
+
+}
+
+.input-field {
+    border: 0;
+    z-index: 1;
+    background-color: transparent;
+    border-bottom: 2px solid #eee;
+    font: inherit;
+    font-size: 1.125rem;
+    padding: 0.25rem 0;
+}
+.input-field:focus,
+.input-field:valid
+
+{
+    outline: 0;
+    border-bottom-color: #6658d3;
+}
+
+.input-field:focus + .input-label,
+.form-container__card__form__input__password:focus + .input-label,
+.form-container__card__form__input.filled > .input-label,
+.form-container__card__form__input__password.filled > .input-label,
+.form-container__card__form__input__password.error .input-field:focus + .input-label,
+.form-container__card__form__input.error .input-field:focus + .input-label
+{
+    color: #6658d3;
+    transform: translateY(-1.5rem);
+}
+
+
+
+.form-container__card__form__input.filled.error .input-field,
+.form-container__card__form__input.filled.error label,
+.form-container__card__form__input__password.filled.error .input-field,
+.form-container__card__form__input__password.filled.error label,
+.form-container__card__form__input.error label,
+.form-container__card__form__input__password.error label
+
+{
+    color: red;
+}
+
+.form-container__card__form__input.error .input-field:focus,
+.form-container__card__form__input__password.error .input-field:focus
+{
+    border-bottom: 2px solid  #6658d3;
+}
+
+.form-container__card__form__input__password.error .input-field:focus,
+.form-container__card__form__input.error .input-field:focus
+{
+    color: #6658d3;
+}
+
+
+
+.form-container__card__form__input.error input,
+.form-container__card__form__input__password.error input
+{
+    border-bottom: 2px solid red;
+}
+
+
+.form-container__card__action {
+    margin-top: 2rem;
+}
+
+.form-container__card__form__input__password input{
+    flex:1;
+}
+
+button{
+    font: inherit;
+    font-size: 1.25rem;
+    padding: 1em;
+    width: 100%;
+    font-weight: 500;
+    background-color: #6658d3;
+    border-radius: 6px;
+    color: #FFF;
+    border: 0;
+    cursor: pointer;
+    transition: 0.6s;
+}
+button:hover{
+    background: #433990;
+}
+
+.action-button:focus {
+    outline: 0;
+}
+.form-container__card__info {
+    padding: 1rem 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #8597a3;
+}
+.form-container__card__info a {
+    display: block;
+    color: #6658d3;
+    text-decoration: none;
+}
+
+.form-container__card__form__input__password{
+    display: flex;
+
+}
