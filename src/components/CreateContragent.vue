@@ -2,8 +2,9 @@
     <div class="form-container">
 
         <div class="form-container__card">
-            <h3>Создать контрагента</h3>
-            <form class="form-container__card__form" @submit="postCreateCompany">
+            <h3 v-show="isCreateItem">Создать контрагента</h3>
+            <h3 v-show="isOpenItem">Редактировать контрагента</h3>
+            <form class="form-container__card__form" @submit="toSendRequest">
 
                 <div
                         class="form-container__card__form__input"
@@ -113,7 +114,8 @@
 
 
                 <div class="form-container__card__action">
-                    <button class="form-container__card__action__button">Создать</button>
+                    <button v-if="isCreateItem" class="form-container__card__action__button">Создать</button>
+                    <button v-else class="form-container__card__action__button">Редактировать</button>
                 </div>
             </form>
         </div>
@@ -152,8 +154,12 @@
             }
         },
         methods:{
-            postCreateCompany(e){
-                e.preventDefault()
+            toSendRequest(e){
+                e.preventDefault();
+                this.isCreateItem? this.postCreateContragent() : this.patchUpdateContragent()
+            },
+            postCreateContragent(){
+
                 if (
                     this.checkTextIsNotEmpty(this.inputName.text) &&
                     this.checkTextIsNotEmpty(this.inputHeadDivisionId.text) &&
@@ -186,14 +192,14 @@
                     $api.post('/api/admin/company',createCompanyData).then((res)=>{
                         console.log(res)
                         if(res.data.error == 'alredy exist'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Юр.лицо уже существует!'})
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Контрагент уже существует!'})
                         }
                         if(res.data.error == 'invalid data'){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
                         }
                         else{
                             this.$store.commit('setCreatedItem',res.data.result)
-                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы создали Юр.лицо!'})
+                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы создали контрагента!'})
                         }
 
                     }).catch((err)=>{
@@ -208,6 +214,66 @@
                     this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
             },
+
+            patchUpdateContragent(){
+
+                if (
+                    this.checkTextIsNotEmpty(this.inputName.text) &&
+                    this.checkTextIsNotEmpty(this.inputHeadDivisionId.text) &&
+                    this.checkTextIsNotEmpty(this.inputTypeId.text) &&
+                    this.checkTextIsNotEmpty(this.inputAuthorizedEmployeeId.text) &&
+                    this.checkTextIsNotEmpty(this.inputBik.text) &&
+                    this.checkTextIsNotEmpty(this.inputAccountNumber.text) &&
+                    this.checkTextIsNotEmpty(this.inputInn.text)  &&
+                    this.checkTextIsNotEmpty(this.inputOgrn.text)  &&
+                    this.checkTextIsNotEmpty(this.inputActualAddress.text)
+
+
+                ){
+                    let updateCompanyData={
+                        "id":this.openItemId,
+                        "name": this.inputName.text,
+                        "head_division_id": this.inputHeadDivisionId.text,
+                        "type_id": this.inputTypeId.text,
+                        "authorized_employee_id": this.inputAuthorizedEmployeeId.text,
+                        "bik": this.inputBik.text,
+                        "tax_id":1,
+                        "account_number": this.inputAccountNumber.text,
+                        "inn": this.inputInn.text,
+                        "ogrn": this.inputOgrn.text,
+                        "actual_address": this.inputActualAddress.text,
+                        "is_owner": false,
+                        "is_active": Boolean(this.inputIsActive.text),
+                        "is_auto_sign_enable": Boolean(this.inputIsAutoSignEnable.text)
+                    }
+
+                    $api.patch('/api/admin/company',updateCompanyData).then((res)=>{
+                        console.log(res)
+                        if(res.data.error == 'alredy exist'){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Контрагент уже существует!'})
+                        }
+                        if(res.data.error == 'invalid data'){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                        }
+                        else{
+                            this.$store.commit('setCreatedItem',res.data.result)
+                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы обновили данные!'})
+                        }
+
+                    }).catch((err)=>{
+                        console.log(err)
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                    })
+
+
+
+                }
+                else{
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
+                }
+            },
+
+
             async getHeadDivisionList(){
                 await $api('/api/admin/divisions').then((res)=>{
                     console.log(res.data)
@@ -245,7 +311,10 @@
 
         },
         computed: mapState([
-            'isCreateItem'
+            'isCreateItem',
+            'isOpenItem',
+            'openItemObject',
+            'openItemId'
         ]),
         watch:{
             isCreateItem(){
@@ -260,6 +329,21 @@
                 this.inputActualAddress={text:'',isError:false}
                 this.inputIsActive={text:'',isError:false}
                 this.inputIsAutoSignEnable={text:'',isError:false}
+            },
+
+            openItemObject(){
+                this.inputName={text:this.openItemObject.name,isError:false}
+                this.inputHeadDivisionId={text:this.openItemObject.head_division.id,isError:false}
+                this.inputTypeId={text:this.openItemObject.type_id,isError:false}
+                this.inputAuthorizedEmployeeId={text:this.openItemObject.authorized_employee.id,isError:false}
+                this.inputBik={text:this.openItemObject.bik,isError:false}
+                this.inputAccountNumber={text:this.openItemObject.account_number,isError:false}
+                this.inputInn={text:this.openItemObject.inn,isError:false}
+                this.inputOgrn={text:this.openItemObject.ogrn,isError:false}
+                this.inputActualAddress={text:this.openItemObject.actual_address,isError:false}
+                this.inputIsOwner={text:this.openItemObject.is_owner,isError:false}
+                this.inputIsActive={text:this.openItemObject.is_active,isError:false}
+                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable,isError:false}
             }
         },
         mounted() {

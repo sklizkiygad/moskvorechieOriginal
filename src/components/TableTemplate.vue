@@ -25,14 +25,14 @@
                     <font-awesome-icon icon="fa-regular fa-file-lines" />
                 </div>
             </div>
-            <h2>{{tableName}}</h2>
+            <h2 >{{tableName}}</h2>
 
         </div>
         <table v-if="toShowArray.length>0" class="table-template__table">
             <thead>
             <tr >
                 <th>#</th>
-                <th v-for="item in headTable">{{getNameRus(item)}}</th>
+                <th @click="setOrderBy(item)" v-for="item in headTable">{{ getNameRus(item)}} <span v-show="tableType==='user'&& item===orderByObject.orderName">{{orderByObject.orderOrder ==='asc'?'&#8659;':'&#8657;'}}</span> </th>
             </tr>
             </thead>
             <tbody>
@@ -58,6 +58,7 @@
     import ShimmerPlaceholder from "@/components/ShimmerPlaceholder";
     import {tableHeadNames} from "@/assets/tableHeadNames";
     import OpenTableItem from "@/components/OpenTableItem";
+    import {mapState} from "vuex";
 
     export default {
         name:'TableTemplate',
@@ -102,12 +103,23 @@
                 this.$store.commit('setOpenItemId',e)
                 this.$store.commit('setIsOpenItem',true)
 
+            },
+            setOrderBy(nameBy){
+                this.$store.commit('setOrderByObject',nameBy)
             }
         },
+
+        computed: mapState([
+            'orderByObject'
+        ]),
+
         watch: {
             toShowArray(){
+
                 if(this.toShowArray.length>0){
-                    this.headTable = (Object.keys(this.toShowArray[0]))
+                     this.headTable = Object.keys(this.toShowArray[0]).filter(item => item!=='id');
+                    console.log(this.headTable)
+                    // this.headTable = (Object.keys(this.toShowArray[0]))
                 }
 
             }

@@ -79,6 +79,11 @@
     font-weight: 200;
     color: #9c27b0;
     padding: 15px 20px;
+    cursor: pointer;
+}
+
+.table-template__table th:hover{
+    background: rgba(250, 186, 250, 0.5);
 }
 
 .table-template__table tbody td{

@@ -39,13 +39,14 @@
                 </div>
 
                 <div
+                        v-if="isCreateItem"
                         class="form-container__card__form__file"
                         :class="inputData.isError? 'error': inputData.text.length>0? 'filled':''"
                 >
 
 
 <!--                    <input type="text" class="input-field" v-model="inputData.text" @blur="inputData.isError=!checkTextIsNotEmpty(inputData.text)" required/>-->
-                    <input type="file" class="file-field" @blur="inputData.isError=!checkTextIsNotEmpty(inputData.text)" @change="getFiles" required>
+                    <input type="file" class="file-field" @blur="inputData.isError=!checkTextIsNotEmpty(inputData.text)" @change="getFiles">
                     <label class="file-label">{{tableHeadNames.data}}</label>
                 </div>
 
@@ -102,7 +103,6 @@
                     this.checkTextIsNotEmpty(this.inputVersion.text) &&
                     this.checkTextIsNotEmpty(this.inputSerialNumber.text) &&
                     this.checkTextIsNotEmpty(this.inputThumbprint.text) &&
-                    this.checkTextIsNotEmpty(this.inputData.text) &&
                     this.checkTextIsNotEmpty(this.inputPin.text)
                 ){
                     let createCertificateData={
@@ -145,8 +145,7 @@
                     this.checkTextIsNotEmpty(this.inputName.text) &&
                     this.checkTextIsNotEmpty(this.inputVersion.text) &&
                     this.checkTextIsNotEmpty(this.inputSerialNumber.text) &&
-                    this.checkTextIsNotEmpty(this.inputThumbprint.text) &&
-                    this.checkTextIsNotEmpty(this.inputData.text)
+                    this.checkTextIsNotEmpty(this.inputThumbprint.text)
 
                 ){
                     let createCertificateData={
@@ -155,7 +154,7 @@
                         "version": this.inputVersion.text,
                         "serial_number": this.inputSerialNumber.text,
                         "thumbprint": this.inputThumbprint.text,
-                        "data": this.inputData.text
+
                     }
                     $api.patch('/api/admin/certificate',createCertificateData).then((res)=>{
                         console.log(res)

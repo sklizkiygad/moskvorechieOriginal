@@ -71,7 +71,8 @@
             this.getAllCertificates()
         },
         computed: mapState([
-            'createdItem'
+            'createdItem',
+            'orderByObject'
         ]),
         watch:{
             createdItem(){

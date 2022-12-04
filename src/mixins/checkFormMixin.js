@@ -22,6 +22,7 @@ export default {
                 return true;
             }
             else{
+                this.$store.commit('setError', {typeErr: 'error', textErr: 'Почта не валидная!'})
                 return false;
 
             }

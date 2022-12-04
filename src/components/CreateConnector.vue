@@ -3,7 +3,7 @@
 
         <div class="form-container__card">
             <h3>Создать коннектор</h3>
-            <form class="form-container__card__form" @submit="postCreateConnector">
+            <form class="form-container__card__form" @submit="toSendRequest">
 
                 <div
                         class="form-container__card__form__input"
@@ -49,12 +49,12 @@
                     <label class="input-label">{{tableHeadNames.login}}</label>
                 </div>
 
-                <div class="form-container__card__form__input">
+                <div  v-show="isCreateItem" class="form-container__card__form__input">
                     <div
                             class="form-container__card__form__input__password"
                             :class="inputPassword.isError ? (inputPassword.text.length>0? 'error filled':'error'): inputPassword.text.length > 0 ? 'filled':''"
                     >
-                        <input :type="showPassword1?'text':'password'" v-model="inputPassword.text" @blur="inputPassword.isError=!checkPassword(inputPassword.text)" class="input-field" required/>
+                        <input :type="showPassword1?'text':'password'" v-model="inputPassword.text" @blur="inputPassword.isError=!checkPassword(inputPassword.text)" class="input-field" :required="isCreateItem"/>
                         <label class="input-label">{{tableHeadNames.password}}</label>
                         <font-awesome-icon icon="fa-regular fa-eye" v-show="showPassword1"  @click="showPassword1=false"/>
                         <font-awesome-icon icon="fa-regular fa-eye-slash" v-show="!showPassword1" @click="showPassword1=true"/>
@@ -106,8 +106,12 @@
             }
         },
         methods:{
-            postCreateConnector(e){
-                e.preventDefault()
+            toSendRequest(e){
+                e.preventDefault();
+                this.isCreateItem? this.postCreateConnector() : this.patchUpdateConnector()
+            },
+            postCreateConnector(){
+
                 if (
                     this.checkTextIsNotEmpty(this.inputCode.text) &&
                     this.checkTextIsNotEmpty(this.inputCompanyId.text) &&
@@ -151,6 +155,54 @@
                     this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
             },
+
+            patchUpdateConnector(){
+
+                if (
+                    this.checkTextIsNotEmpty(this.inputCode.text) &&
+                    this.checkTextIsNotEmpty(this.inputCompanyId.text) &&
+                    this.checkTextIsNotEmpty(this.inputTypeId.text) &&
+                    this.checkTextIsNotEmpty(this.inputDiadocBoxId.text) &&
+                    this.checkTextIsNotEmpty(this.inputLogin.text) &&
+                    this.checkTextIsNotEmpty(this.inputApiToken.text) &&
+                    this.checkPassword(this.inputPassword.text)
+                ){
+                    let updateConnectorData={
+                        "id":this.openItemId,
+                        "code": this.inputCode.text,
+                        "company_id": this.inputCompanyId.text,
+                        "type_id": this.inputTypeId.text,
+                        "diadoc_box_id": this.inputDiadocBoxId.text,
+                        "login": this.inputLogin.text,
+                        "api_token": this.inputApiToken.text
+                    }
+                    $api.patch('/api/admin/connector',updateConnectorData).then((res)=>{
+                        console.log(res)
+                        if(res.data.error == 'alredy exist'){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Коннектор уже существует!'})
+                        }
+                        if(res.data.error == 'invalid data'){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                        }
+                        else{
+                            this.$store.commit('setCreatedItem',res.data.result)
+                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы обновили данные!'})
+                        }
+
+                    }).catch((err)=>{
+                        console.log(err)
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                    })
+
+
+
+                }
+                else{
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
+                }
+            },
+
+
             async getCompaniesList(){
                 await $api('/api/admin/companies').then((res)=>{
                     this.companiesList=res.data.result
@@ -173,7 +225,11 @@
 
         },
         computed: mapState([
-            'isCreateItem'
+            'isCreateItem',
+            'createdItem',
+            'isOpenItem',
+            'openItemObject',
+            'openItemId'
         ]),
         watch:{
             isCreateItem(){
@@ -185,6 +241,18 @@
                 this.inputPassword={text:'',isError:false}
                 this.inputApiToken={text:'',isError:false}
                 this.showPassword1=false
+            },
+            openItemObject(){
+                this.inputCode={text:this.openItemObject.code,isError:false}
+                this.inputCompanyId={text:this.openItemObject.company.id,isError:false}
+                this.inputTypeId={text:this.openItemObject.type.id,isError:false}
+                this.inputDiadocBoxId={text:this.openItemObject.diadoc_box_id,isError:false}
+                this.inputLogin={text:this.openItemObject.login,isError:false}
+                this.inputApiToken={text:this.openItemObject.api_token,isError:false}
+
+
+
+
             }
         },
         mounted() {

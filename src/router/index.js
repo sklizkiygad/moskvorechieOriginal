@@ -13,13 +13,17 @@ import CompanyConnectorsPage from "@/pages/CompanyConnectorsPage";
 import CompanyLegalPage from "@/pages/CompanyLegalPage";
 import ContragentsPage from "@/pages/ContragentsPage";
 
+
 Vue.use(VueRouter)
+
 
 const checkMainPage=()=>{
   if(localStorage.getItem('Moskvorechie')){
+
     return CompanyPage
   }
   else{
+
     return LoginPage
   }
 
@@ -65,7 +69,7 @@ const routes = [
   },
   { path: '/cabinet/certificates',
     name:'Сертификаты',
-    component: CabinetCertificatesPage
+    component: CabinetCertificatesPage,
   },
 
   { path: '/documents',

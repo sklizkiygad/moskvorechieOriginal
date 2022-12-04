@@ -82,6 +82,7 @@
                         } else {
                             localStorage.setItem('Moskvorechie', JSON.stringify(res.data.result))
                             this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы авторизованы!'})
+                            this.$store.commit('setIsServerError', false)
                             this.checkIsAuth()
 
 

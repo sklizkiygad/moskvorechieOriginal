@@ -7,10 +7,11 @@
             <form class="form-container__card__form" @submit="toSendRequest">
 
                 <div
+                        v-show="isCreateItem"
                         class="form-container__card__form__input"
                         :class="inputLogin.isError? 'error': inputLogin.text.length>0? 'filled':''"
                 >
-                    <input type="text" class="input-field" v-model="inputLogin.text" @blur="inputLogin.isError=!checkTextIsNotEmpty(inputLogin.text)" required/>
+                    <input type="text" class="input-field" v-model="inputLogin.text" @blur="inputLogin.isError=!checkTextIsNotEmpty(inputLogin.text)" :required="isCreateItem"/>
                     <label class="input-label">{{tableHeadNames.login}}</label>
                 </div>
 
@@ -149,7 +150,6 @@
             patchUpdateUser(){
 
                 if (
-                    this.checkTextIsNotEmpty(this.inputLogin.text) &&
                     this.checkEmail(this.inputEmail.text) &&
                     this.checkTextIsNotEmpty(this.inputFirstName.text) &&
                     this.checkTextIsNotEmpty(this.inputSecondName.text)
@@ -162,6 +162,7 @@
                         "first_name": this.inputFirstName.text,
                         "last_name": this.inputSecondName.text,
                     }
+
 
                     $api.patch('/api/admin/user',patchUserData).then((res)=>{
                         console.log(res)
@@ -186,7 +187,7 @@
 
                 }
                 else{
-                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
+                     this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
             }
 

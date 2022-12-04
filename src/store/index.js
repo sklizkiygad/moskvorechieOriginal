@@ -22,6 +22,8 @@ export default new Vuex.Store({
     openItemObject:{},
     isOpenItem:false,
 
+    orderByObject:{},
+
     createdItem:{}
 
 
@@ -39,8 +41,15 @@ export default new Vuex.Store({
       setTimeout(()=>{
         state.isAlert=false;
       }, 2000)
+
+      if(textErr==='Ошибка сервера!'){
+        state.isServerError=true;
+      }
     },
 
+    setIsServerError(state,isIt){
+      state.isServerError=isIt
+    },
     setIsCreateItem(state,isIt){
       state.isCreateItem=isIt;
     },
@@ -63,6 +72,7 @@ export default new Vuex.Store({
 
     setOpenItemUrl(state,urlText){
       state.openItemUrl=urlText
+      state.orderByObject = {}
     },
 
     setOpenItemId(state,itemId){
@@ -76,10 +86,26 @@ export default new Vuex.Store({
     setOpenItemObject(state,itemObj){
       state.openItemObject=itemObj
 
-    }
-
-
+    },
+    setOrderByObject(state,orderName){
+      if(state.orderByObject.orderName===orderName){
+        if (state.orderByObject.orderOrder === 'asc') {
+          state.orderByObject = {orderName: orderName, orderOrder: 'desc'}
+        } else {
+          state.orderByObject = {orderName: orderName, orderOrder: 'asc'}
+        }
+      }
+      else{
+        state.orderByObject = {orderName: orderName, orderOrder: 'desc'}
+      }
+      },
+      setOrderByObjectNull(state){
+        state.orderByObject = {}
+      }
   },
+
+
+
   actions: {
   },
   modules: {

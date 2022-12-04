@@ -3,7 +3,7 @@
 
         <div class="form-container__card">
             <h3>Создать сотрудника</h3>
-            <form class="form-container__card__form" @submit="postCreateCertificate">
+            <form class="form-container__card__form" @submit="toSendRequest">
 
                 <div
                         class="form-container__card__form__input"
@@ -167,10 +167,11 @@
             }
         },
         methods:{
-            postCreateCertificate(e){
-
-
-                e.preventDefault()
+            toSendRequest(e){
+                e.preventDefault();
+                this.isCreateItem? this.postCreateCertificate() : this.patchUpdateCertificate()
+            },
+            postCreateCertificate(){
 
                 if (
                     this.checkTextIsNotEmpty(this.inputFirstName.text) &&
@@ -200,14 +201,68 @@
                     $api.post('/api/admin/employee',createCertificateData).then((res)=>{
                         console.log(res)
                         if(res.data.error == 'alredy exist'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Юр.лицо уже существует!'})
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Сотрудник уже существует!'})
                         }
                         if(res.data.error == 'invalid data'){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
                         }
                         else{
                             this.$store.commit('setCreatedItem',res.data.result)
-                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы создали Юр.лицо!'})
+                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы создали сотрудника!'})
+                        }
+
+                    }).catch((err)=>{
+                        console.log(err)
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                    })
+
+
+
+                }
+                else{
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
+                }
+            },
+
+            patchUpdateCertificate(){
+
+                if (
+                    this.checkTextIsNotEmpty(this.inputFirstName.text) &&
+                    this.checkTextIsNotEmpty(this.inputLastName.text) &&
+                    this.checkTextIsNotEmpty(this.inputMiddleName.text) &&
+                    this.checkTextIsNotEmpty(this.inputUserId.text) &&
+                    this.checkTextIsNotEmpty(this.inputCompanyId.text) &&
+                    this.checkTextIsNotEmpty(this.inputCertificateId.text) &&
+                    this.checkTextIsNotEmpty(this.inputEmail.text) &&
+                    this.checkTextIsNotEmpty(this.inputDivisionId.text) &&
+                    this.checkTextIsNotEmpty(this.inputStatusId.text) &&
+                    this.checkTextIsNotEmpty(this.inputPosition.text)
+                ){
+                    let updateCertificateData={
+                        "id":this.openItemId,
+                        "first_name": this.inputFirstName.text,
+                        "last_name": this.inputLastName.text,
+                        "middle_name": this.inputMiddleName.text,
+                        "user_id": this.inputUserId.text,
+                        "company_id": this.inputCompanyId.text,
+                        "certificate_id": this.inputCertificateId.text,
+                        "email": this.inputEmail.text,
+                        "division_id": this.inputDivisionId.text,
+                        "status_id":  this.inputStatusId.text,
+                        "position": this.inputPosition.text,
+                        "is_responsible": Boolean(this.inputIsResponsible.text)
+                    }
+                    $api.patch('/api/admin/employee',updateCertificateData).then((res)=>{
+                        console.log(res)
+                        if(res.data.error == 'alredy exist'){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Сотрудник уже существует!'})
+                        }
+                        if(res.data.error == 'invalid data'){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                        }
+                        else{
+                            this.$store.commit('setCreatedItem',res.data.result)
+                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы обновили данные!'})
                         }
 
                     }).catch((err)=>{
@@ -272,7 +327,10 @@
             },
         },
         computed: mapState([
-            'isCreateItem'
+            'isCreateItem',
+            'isOpenItem',
+            'openItemObject',
+            'openItemId'
         ]),
         watch:{
             isCreateItem(){
@@ -287,7 +345,21 @@
                 this.inputStatusId={text:'',isError:false}
                 this.inputPosition={text:'',isError:false}
                 this.inputIsResponsible={text:'',isError:false}
+            },
+            openItemObject(){
+                this.inputFirstName={text:this.openItemObject.first_name,isError:false}
+                this.inputLastName={text:this.openItemObject.last_name,isError:false}
+                this.inputMiddleName={text:this.openItemObject.middle_name, isError:false}
+                this.inputUserId={text:this.openItemObject.user.id,isError:false}
+                this.inputCompanyId={text:this.openItemObject.company.id,isError:false}
+                this.inputCertificateId={text:this.openItemObject.certificate.id,isError:false}
+                this.inputEmail={text:this.openItemObject.email,isError:false}
+                this.inputDivisionId={text:this.openItemObject.division.id,isError:false}
+                this.inputStatusId={text:this.openItemObject.status_id,isError:false}
+                this.inputPosition={text:this.openItemObject.position,isError:false}
+                this.inputIsResponsible={text:this.openItemObject.is_responsible? 'true':'',isError:false}
             }
+
         },
         mounted() {
             this.getUsersList();

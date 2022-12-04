@@ -38,15 +38,15 @@
             async getAllUsers(){
                 this.$store.commit('setIsLoading',true);
 
-
+                let orderByQuery=this.orderByObject.orderName?('?order['+this.orderByObject.orderName+']='+this.orderByObject.orderOrder):''
+                console.log(orderByQuery)
                 let userData={
                     params:
                         {
                             name:this.searchBoxQuery.first_name,
-                            order:'[name]=A'
                         }
                 }
-                await $api.get('/api/admin/users',userData).then((res)=>{
+                await $api.get(`/api/admin/users${orderByQuery}`,userData).then((res)=>{
                     console.log(res)
 
                     if(res.data.error){
@@ -54,7 +54,7 @@
                     }
                     else{
                         this.usersArray=res.data.result;
-                        this.$store.commit('setOpenItemUrl','/api/admin/users')
+
                     }
                     this.$store.commit('setIsLoading',false);
                 }).catch((err)=>{
@@ -70,11 +70,19 @@
             }
         },
         mounted() {
+            this.$store.commit('setOpenItemUrl','/api/admin/users')
             this.getAllUsers()
+
         },
-        computed: mapState([
-            'createdItem'
-        ]),
+        computed:
+    mapState([
+        'createdItem',
+        'orderByObject',
+    ]),
+
+
+
+
         watch:{
             searchBoxQuery:{
                 handler(){
@@ -83,9 +91,11 @@
                 deep:true
 
             },
+            orderByObject(){
+              this.getAllUsers()
+            },
             createdItem(){
                 this.getAllUsers();
-
             }
 
         }

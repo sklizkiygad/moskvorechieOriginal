@@ -38,7 +38,7 @@
                 <div class="form-container__card__form__select">
                     <select v-model="inputAuthorizedEmployeeId.text">
 
-                        <option value="" disabled selected>Выбрать тип</option>
+                        <option value="" disabled selected>Выбрать пользователя</option>
                         <option v-for="item in employeesList" :value="item.id" >{{item.last_name+' '+item.first_name}}</option>
 
                     </select>
@@ -115,7 +115,8 @@
                     <label class="select-label">{{tableHeadNames.is_auto_sign_enable}}</label>
                 </div>
                 <div class="form-container__card__action">
-                    <button class="form-container__card__action__button">Создать</button>
+                    <button v-if="isCreateItem" class="form-container__card__action__button">Создать</button>
+                    <button v-else class="form-container__card__action__button">Редактировать</button>
                 </div>
             </form>
         </div>
@@ -157,7 +158,7 @@
         methods:{
             toSendRequest(e){
                 e.preventDefault();
-                this.isCreateItem? this.postCreateCompany() : this.patchCreateCompany()
+                this.isCreateItem? this.postCreateCompany() : this.patchUpdateCompany()
             },
             postCreateCompany(){
                 if (
@@ -217,7 +218,7 @@
                 }
             },
 
-            patchCreateCompany(){
+            patchUpdateCompany(){
 
                 if (
                     this.checkTextIsNotEmpty(this.inputName.text) &&
@@ -235,6 +236,7 @@
 
                 ){
                     let createCompanyData={
+                        "id":this.openItemId,
                         "name": this.inputName.text,
                         "head_division_id": this.inputHeadDivisionId.text,
                         "type_id": this.inputTypeId.text,
@@ -250,7 +252,7 @@
                         "is_auto_sign_enable": Boolean(this.inputIsAutoSignEnable.text)
                     }
 
-                    $api.post('/api/admin/company',createCompanyData).then((res)=>{
+                    $api.patch('/api/admin/company',createCompanyData).then((res)=>{
                         console.log(res)
                         if(res.data.error == 'alredy exist'){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Компания уже существует!'})
@@ -260,7 +262,7 @@
                         }
                         else{
                             this.$store.commit('setCreatedItem',res.data.result)
-                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы создали компанию!'})
+                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы обновили данные!'})
                         }
 
                     }).catch((err)=>{
@@ -332,7 +334,22 @@
                 this.inputIsOwner={text:'',isError:false}
                 this.inputIsActive={text:'',isError:false}
                 this.inputIsAutoSignEnable={text:'',isError:false}
+            },
+            openItemObject(){
+                this.inputName={text:this.openItemObject.name,isError:false}
+                this.inputHeadDivisionId={text:this.openItemObject.head_division.id,isError:false}
+                this.inputTypeId={text:this.openItemObject.type_id,isError:false}
+                this.inputAuthorizedEmployeeId={text:this.openItemObject.authorized_employee.id,isError:false}
+                this.inputBik={text:this.openItemObject.bik,isError:false}
+                this.inputAccountNumber={text:this.openItemObject.account_number,isError:false}
+                this.inputInn={text:this.openItemObject.inn,isError:false}
+                this.inputOgrn={text:this.openItemObject.ogrn,isError:false}
+                this.inputActualAddress={text:this.openItemObject.actual_address,isError:false}
+                this.inputIsOwner={text:this.openItemObject.is_owner,isError:false}
+                this.inputIsActive={text:this.openItemObject.is_active,isError:false}
+                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable,isError:false}
             }
+
         },
         mounted() {
             this.getHeadDivisionList();
