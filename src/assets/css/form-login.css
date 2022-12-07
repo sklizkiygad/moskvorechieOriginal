@@ -151,8 +151,12 @@ input {
 
 .form-container__card__action {
     margin-top: 2rem;
+    display: flex;
+    gap: 10px;
 }
-
+.form-container__card__action__button.delete-button{
+    background-color: #d7454a;
+}
 .form-container__card__form__input__password input{
     flex:1;
 }
@@ -160,7 +164,7 @@ input {
 button{
     font: inherit;
     font-size: 1.25rem;
-    padding: 1em;
+    padding: 0.5em;
     width: 100%;
     font-weight: 500;
     background-color: #6658d3;

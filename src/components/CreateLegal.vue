@@ -187,7 +187,7 @@
                         if(res.data.error == 'alredy exist'){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Юр.лицо уже существует!'})
                         }
-                        if(res.data.error == 'invalid data'){
+                        else if(res.data.error == 'invalid data'){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
                         }
                         else{
@@ -241,15 +241,13 @@
 
                     $api.patch('/api/admin/company',updateCompanyData).then((res)=>{
                         console.log(res)
-                        if(res.data.error == 'alredy exist'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Юр.лицо уже существует!'})
+                        if(res.data.error){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Ошибка!'})
                         }
-                        if(res.data.error == 'invalid data'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
-                        }
+
                         else{
                             this.$store.commit('setCreatedItem',res.data.result)
-                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы обновили на данные!'})
+                            this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы обновили данные!'})
                         }
 
                     }).catch((err)=>{
@@ -331,8 +329,8 @@
                 this.inputInn={text:this.openItemObject.inn,isError:false}
                 this.inputOgrn={text:this.openItemObject.ogrn,isError:false}
                 this.inputActualAddress={text:this.openItemObject.actual_address,isError:false}
-                this.inputIsActive={text:this.openItemObject.is_active,isError:false}
-                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable,isError:false}
+                this.inputIsActive={text:this.openItemObject.is_active?'true':'',isError:false}
+                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable?'true':'',isError:false}
             }
         },
         mounted() {

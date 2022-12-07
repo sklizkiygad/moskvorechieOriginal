@@ -129,6 +129,9 @@
     .header-sidebar__list li a{
         font-size: 15px;
     }
+    .header-sidebar__list__sub{
+        width: 165px;
+    }
 }
 
 @media (max-width: 547px) {

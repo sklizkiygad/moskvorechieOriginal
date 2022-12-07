@@ -51,8 +51,17 @@
                     <label class="input-label">{{tableHeadNames.last_name}}</label>
                 </div>
 
-                <div v-show="isCreateItem" class="form-container__card__form__input">
-                    <div
+
+                <div class="change-password-button">
+                    <button v-if="isOpenItem" type="button" @click="showChangePasswordField=!showChangePasswordField" class="form-container__card__action__button">{{isCreateItem || (isOpenItem && showChangePasswordField)?'Скрыть пароль':'Изменить пароль'}}</button>
+                </div>
+
+
+                <div v-show="isCreateItem || (isOpenItem && showChangePasswordField)" class="form-container__card__form__input">
+                    <div class="change-password-button">
+                    <button v-if="isOpenItem" type="button" @click="changePasswordItem" class="form-container__card__action__button">{{isCreateItem || (isOpenItem && showChangePasswordField)?'Изменить пароль':'Скрыть пароль'}}</button>
+                    </div>
+                        <div
                             class="form-container__card__form__input__password"
                             :class="inputPassword.isError ? (inputPassword.text.length>0? 'error filled':'error'): inputPassword.text.length > 0 ? 'filled':''"
                     >
@@ -61,16 +70,16 @@
                         <font-awesome-icon icon="fa-regular fa-eye" v-show="showPassword1"  @click="showPassword1=false"/>
                         <font-awesome-icon icon="fa-regular fa-eye-slash" v-show="!showPassword1" @click="showPassword1=true"/>
                     </div>
+
                 </div>
-
-
-
 
 
                 <div class="form-container__card__action">
                     <button v-if="isCreateItem" class="form-container__card__action__button">Создать</button>
-                    <button v-else class="form-container__card__action__button">Редактировать</button>
+                    <button v-if="isOpenItem" class="form-container__card__action__button">Редактировать</button>
+                    <button type="button" @click="deleteUser" v-if="isOpenItem" class="form-container__card__action__button delete-button">Удалить</button>
                 </div>
+
             </form>
         </div>
     </div>
@@ -95,6 +104,8 @@
                 inputSecondName:{text:'',isError: false},
                 inputPassword:{text:'',isError:false},
                 showPassword1:false,
+
+                showChangePasswordField:false
             }
        },
         methods:{
@@ -121,11 +132,11 @@
                     }
                     console.log(createUserData)
                     $api.post('/api/admin/user',createUserData).then((res)=>{
-                        console.log(res)
-                        if(res.data.error === 'alredy exist'){
+
+                        if(res.data.error === "already exist"){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Пользователь уже существует!'})
                         }
-                        if(res.data.error === 'invalid data'){
+                       else if(res.data.error === "invalid data"){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
                         }
                         else{
@@ -189,6 +200,42 @@
                 else{
                      this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
+            },
+            deleteUser(){
+                $api.delete(`/api/admin/user/${this.openItemId}`).then((res)=>{
+                    console.log(res)
+                    if(res.data.error === 'invalid data'){
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                    }
+                    else{
+
+                        this.$store.commit('setCreatedItem',res.data.result)
+                        this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы удалили пользователя!'})
+                    }
+
+                }).catch((err)=>{
+                    console.log(err)
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                })
+            },
+            async changePasswordItem(){
+                let patchUpdatePassword={
+                    "id":this.openItemId,
+                    "new_password":this.inputPassword.text
+                }
+                await $api.patch('/api/admin/user/password',patchUpdatePassword).then(res=>{
+                    console.log(res)
+                    if(res.data.error === 'invalid data'){
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                    }
+                else{
+                        this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы обновили пароль!'})
+                    }
+                }).catch(err=>{
+                    console.log(err)
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                })
+
             }
 
         },
@@ -223,5 +270,8 @@
 </script>
 
 <style scoped>
+.change-password-button{
+    margin: 10px 0;
 
+}
 </style>

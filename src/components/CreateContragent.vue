@@ -108,14 +108,10 @@
 
 
 
-
-
-
-
-
                 <div class="form-container__card__action">
                     <button v-if="isCreateItem" class="form-container__card__action__button">Создать</button>
-                    <button v-else class="form-container__card__action__button">Редактировать</button>
+                    <button v-if="isOpenItem" class="form-container__card__action__button">Редактировать</button>
+                    <button type="button" @click="deleteContragent" v-if="isOpenItem" class="form-container__card__action__button delete-button">Удалить</button>
                 </div>
             </form>
         </div>
@@ -158,8 +154,7 @@
                 e.preventDefault();
                 this.isCreateItem? this.postCreateContragent() : this.patchUpdateContragent()
             },
-            postCreateContragent(){
-
+           async postCreateContragent(){
                 if (
                     this.checkTextIsNotEmpty(this.inputName.text) &&
                     this.checkTextIsNotEmpty(this.inputHeadDivisionId.text) &&
@@ -189,7 +184,7 @@
                         "is_auto_sign_enable": Boolean(this.inputIsAutoSignEnable.text)
                     }
 
-                    $api.post('/api/admin/company',createCompanyData).then((res)=>{
+                   await $api.post('/api/admin/company',createCompanyData).then((res)=>{
                         console.log(res)
                         if(res.data.error == 'alredy exist'){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Контрагент уже существует!'})
@@ -215,7 +210,7 @@
                 }
             },
 
-            patchUpdateContragent(){
+            async patchUpdateContragent(){
 
                 if (
                     this.checkTextIsNotEmpty(this.inputName.text) &&
@@ -247,7 +242,7 @@
                         "is_auto_sign_enable": Boolean(this.inputIsAutoSignEnable.text)
                     }
 
-                    $api.patch('/api/admin/company',updateCompanyData).then((res)=>{
+                  await  $api.patch('/api/admin/company',updateCompanyData).then((res)=>{
                         console.log(res)
                         if(res.data.error == 'alredy exist'){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Контрагент уже существует!'})
@@ -272,6 +267,25 @@
                     this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
             },
+
+            async deleteContragent(){
+               await  $api.delete(`/api/admin/company/${this.openItemId}`).then((res)=>{
+                    console.log(res)
+                    if(res.data.error === 'invalid data'){
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                    }
+                    else{
+
+                        this.$store.commit('setCreatedItem',res.data.result)
+                        this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы удалили контрагента!'})
+                    }
+
+                }).catch((err)=>{
+                    console.log(err)
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                })
+            },
+
 
 
             async getHeadDivisionList(){
@@ -341,9 +355,8 @@
                 this.inputInn={text:this.openItemObject.inn,isError:false}
                 this.inputOgrn={text:this.openItemObject.ogrn,isError:false}
                 this.inputActualAddress={text:this.openItemObject.actual_address,isError:false}
-                this.inputIsOwner={text:this.openItemObject.is_owner,isError:false}
-                this.inputIsActive={text:this.openItemObject.is_active,isError:false}
-                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable,isError:false}
+                this.inputIsActive={text:this.openItemObject.is_active?'true':'',isError:false}
+                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable?'true':'',isError:false}
             }
         },
         mounted() {

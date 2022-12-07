@@ -12,6 +12,8 @@ import CompanyDivisionsPage from "@/pages/CompanyDivisionsPage";
 import CompanyConnectorsPage from "@/pages/CompanyConnectorsPage";
 import CompanyLegalPage from "@/pages/CompanyLegalPage";
 import ContragentsPage from "@/pages/ContragentsPage";
+import DocumentsInboxPage from "@/pages/DocumentsInboxPage";
+import DocumentsOutboxPage from "@/pages/DocumentsOutboxPage";
 
 
 Vue.use(VueRouter)
@@ -75,6 +77,17 @@ const routes = [
   { path: '/documents',
     name:'Документы',
     component: DocumentsPage
+  },
+
+
+  { path: '/documents/inbox',
+    name:'Входящие',
+    component: DocumentsInboxPage
+  },
+
+  { path: '/documents/outbox',
+    name:'Входящие',
+    component: DocumentsOutboxPage
   },
 
   { path: '/contragents',

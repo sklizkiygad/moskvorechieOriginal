@@ -64,7 +64,8 @@
 
                 <div class="form-container__card__action">
                     <button v-if="isCreateItem" class="form-container__card__action__button">Создать</button>
-                    <button v-else class="form-container__card__action__button">Редактировать</button>
+                    <button  v-if="isOpenItem" class="form-container__card__action__button">Редактировать</button>
+                    <button type="button" @click="deleteCertificate" v-if="isOpenItem" class="form-container__card__action__button delete-button">Удалить</button>
                 </div>
             </form>
         </div>
@@ -181,6 +182,25 @@
                     this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
             },
+
+            deleteCertificate(){
+                $api.delete(`/api/admin/certificate/${this.openItemId}`).then((res)=>{
+                    console.log(res)
+                    if(res.data.error === 'invalid data'){
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                    }
+                    else{
+
+                        this.$store.commit('setCreatedItem',res.data.result)
+                        this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы удалили сертификат!'})
+                    }
+
+                }).catch((err)=>{
+                    console.log(err)
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                })
+            },
+
            getFiles(e){
 
                 // get the files

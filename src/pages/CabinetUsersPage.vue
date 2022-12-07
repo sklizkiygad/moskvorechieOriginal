@@ -36,6 +36,7 @@
         },
         methods:{
             async getAllUsers(){
+
                 this.$store.commit('setIsLoading',true);
 
                 let orderByQuery=this.orderByObject.orderName?('?order['+this.orderByObject.orderName+']='+this.orderByObject.orderOrder):''
@@ -44,6 +45,7 @@
                     params:
                         {
                             name:this.searchBoxQuery.first_name,
+
                         }
                 }
                 await $api.get(`/api/admin/users${orderByQuery}`,userData).then((res)=>{

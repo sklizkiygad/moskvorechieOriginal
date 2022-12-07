@@ -24,6 +24,7 @@
         isServerError(){
             if(this.isServerError){
                 localStorage.removeItem('Moskvorechie')
+                this.$router.push('/')
                 this.$router.go()
             }
         }

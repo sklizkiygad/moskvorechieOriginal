@@ -2,7 +2,8 @@
     <div class="form-container">
 
         <div class="form-container__card">
-            <h3>Создать коннектор</h3>
+            <h3 v-show="isCreateItem">Создать коннектор</h3>
+            <h3 v-show="isOpenItem">Редактировать коннектор</h3>
             <form class="form-container__card__form" @submit="toSendRequest">
 
                 <div
@@ -72,7 +73,9 @@
 
 
                 <div class="form-container__card__action">
-                    <button class="form-container__card__action__button">Создать</button>
+                    <button v-if="isCreateItem" class="form-container__card__action__button">Создать</button>
+                    <button v-if="isOpenItem" class="form-container__card__action__button">Редактировать</button>
+                    <button type="button" @click="deleteConnector" v-if="isOpenItem" class="form-container__card__action__button delete-button">Удалить</button>
                 </div>
             </form>
         </div>
@@ -164,8 +167,7 @@
                     this.checkTextIsNotEmpty(this.inputTypeId.text) &&
                     this.checkTextIsNotEmpty(this.inputDiadocBoxId.text) &&
                     this.checkTextIsNotEmpty(this.inputLogin.text) &&
-                    this.checkTextIsNotEmpty(this.inputApiToken.text) &&
-                    this.checkPassword(this.inputPassword.text)
+                    this.checkTextIsNotEmpty(this.inputApiToken.text)
                 ){
                     let updateConnectorData={
                         "id":this.openItemId,
@@ -178,11 +180,8 @@
                     }
                     $api.patch('/api/admin/connector',updateConnectorData).then((res)=>{
                         console.log(res)
-                        if(res.data.error == 'alredy exist'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Коннектор уже существует!'})
-                        }
-                        if(res.data.error == 'invalid data'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                        if(res.data.error){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Ошибка!'})
                         }
                         else{
                             this.$store.commit('setCreatedItem',res.data.result)
@@ -200,6 +199,24 @@
                 else{
                     this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
+            },
+
+            deleteConnector(){
+                $api.delete(`/api/admin/connector/${this.openItemId}`).then((res)=>{
+                    console.log(res)
+                    if(res.data.error === 'invalid data'){
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                    }
+                    else{
+
+                        this.$store.commit('setCreatedItem',res.data.result)
+                        this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы удалили коннектор!'})
+                    }
+
+                }).catch((err)=>{
+                    console.log(err)
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                })
             },
 
 

@@ -27,6 +27,7 @@ export const tableHeadNames={
     address_id:'Адрес',
     contact_id:'Контакт',
     certificate_id:'Сертификат',
+    certificate:'Сертификат',
     user_id:'Пользователь',
     company_id:'Компания (ID)',
     company:'Компания',

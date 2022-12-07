@@ -12,7 +12,6 @@
             <CreateCompany v-if="typeCreate==='company'"/>
             <CreateLegal v-if="typeCreate==='legal'"/>
             <CreateContragent v-if="typeCreate==='contragent'"/>
-            <CreateDocument v-if="typeCreate==='document'"/>
 
 
 
@@ -31,12 +30,12 @@
     import CreateCompany from "@/components/CreateCompany";
     import CreateLegal from "@/components/CreateLegal";
     import CreateContragent from "@/components/CreateContragent";
-    import CreateDocument from "@/components/CreateDocument";
+
 
     export default {
         name:'CreateTemplate',
         components: {
-            CreateDocument,
+
             CreateContragent,
             CreateLegal,
             CreateCompany, CreateDivision, CreateConnector, CreateCertificate, CreateUser, CreateEmployee},

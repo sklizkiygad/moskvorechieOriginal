@@ -28,8 +28,8 @@
             <li>
                 <router-link to="/documents"><font-awesome-icon icon="fa-regular fa-file" /> Документы</router-link>
                 <ul class="header-sidebar__list__sub">
-                    <li><router-link to="/">Входящие</router-link></li>
-                    <li><router-link to="/">Исходящие</router-link></li>
+                    <li><router-link to="/documents/inbox">Входящие</router-link></li>
+                    <li><router-link to="/documents/outbox">Исходящие</router-link></li>
                 </ul>
             </li>
             <li><router-link to="/contragents"><font-awesome-icon icon="fa-regular fa-handshake" /> Контрагенты</router-link></li>

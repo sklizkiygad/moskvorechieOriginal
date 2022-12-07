@@ -5,7 +5,7 @@
             <BreadCrumbs :path-array="pathArrayDoc"/>
 
 
-            <TableTemplate :to-show-array="documentsArray" :table-name="'Документы'" :table-type="'document'"/>
+            <TableTemplate :to-show-array="documentsArray" :table-name="'Входящие'" :table-type="'inbox'"/>
         </div>
 
     </div>
@@ -23,12 +23,13 @@
     import {mapState} from "vuex";
 
     export default {
-        name:'DocumentsPage',
+        name:'DocumentsInboxPage',
         components: { BreadCrumbs, HeaderSidebar, ShimmerPlaceholder, TableTemplate},
         data(){
             return{
                 pathArrayDoc:[
                     {pathName:'Документы', pathPath:'/documents'},
+                    {pathName:'Входящие', pathPath:'/documents/inbox'},
                 ],
 
                 documentsArray:[],
@@ -40,9 +41,13 @@
             async getAllDocuments(){
                 this.$store.commit('setIsLoading',true);
 
+                let inboxData={
+                    params:{
+                        type_id:2
+                    }
+                }
 
-
-                await $api.get('/api/admin/documents').then((res)=>{
+                await $api.get('/api/admin/documents', inboxData).then((res)=>{
                     console.log(res)
 
                     if(res.data.error){
@@ -51,10 +56,10 @@
                     else{
                         console.log(res.data.result)
                         let formatDateArray =
-                        res.data.result.map((item)=>{
-                            item.legal_date=item.legal_date.slice(0,10)
-                            return item
-                        })
+                            res.data.result.map((item)=>{
+                                item.legal_date=item.legal_date.slice(0,10)
+                                return item
+                            })
 
                         this.documentsArray=formatDateArray;
                     }

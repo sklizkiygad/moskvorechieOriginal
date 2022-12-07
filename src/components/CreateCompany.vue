@@ -116,7 +116,8 @@
                 </div>
                 <div class="form-container__card__action">
                     <button v-if="isCreateItem" class="form-container__card__action__button">Создать</button>
-                    <button v-else class="form-container__card__action__button">Редактировать</button>
+                    <button v-if="isOpenItem" class="form-container__card__action__button">Редактировать</button>
+                    <button type="button" @click="deleteCompany" v-if="isOpenItem" class="form-container__card__action__button delete-button">Удалить</button>
                 </div>
             </form>
         </div>
@@ -170,11 +171,7 @@
                     this.checkTextIsNotEmpty(this.inputAccountNumber.text) &&
                     this.checkTextIsNotEmpty(this.inputInn.text)  &&
                     this.checkTextIsNotEmpty(this.inputOgrn.text)  &&
-                    this.checkTextIsNotEmpty(this.inputActualAddress.text)  &&
-                    this.checkTextIsNotEmpty(this.inputIsOwner.text)  &&
-                    this.checkTextIsNotEmpty(this.inputIsActive.text)  &&
-                    this.checkTextIsNotEmpty(this.inputIsAutoSignEnable.text)
-
+                    this.checkTextIsNotEmpty(this.inputActualAddress.text)
                 ){
                     let createCompanyData={
                         "name": this.inputName.text,
@@ -194,10 +191,10 @@
 
                     $api.post('/api/admin/company',createCompanyData).then((res)=>{
                         console.log(res)
-                        if(res.data.error == 'alredy exist'){
+                        if(res.data.error == "alredy exist"){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Компания уже существует!'})
                         }
-                        if(res.data.error == 'invalid data'){
+                        else if(res.data.error == "invalid data"){
                             this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
                         }
                         else{
@@ -229,11 +226,7 @@
                     this.checkTextIsNotEmpty(this.inputAccountNumber.text) &&
                     this.checkTextIsNotEmpty(this.inputInn.text)  &&
                     this.checkTextIsNotEmpty(this.inputOgrn.text)  &&
-                    this.checkTextIsNotEmpty(this.inputActualAddress.text)  &&
-                    this.checkTextIsNotEmpty(this.inputIsOwner.text)  &&
-                    this.checkTextIsNotEmpty(this.inputIsActive.text)  &&
-                    this.checkTextIsNotEmpty(this.inputIsAutoSignEnable.text)
-
+                    this.checkTextIsNotEmpty(this.inputActualAddress.text)
                 ){
                     let createCompanyData={
                         "id":this.openItemId,
@@ -254,11 +247,9 @@
 
                     $api.patch('/api/admin/company',createCompanyData).then((res)=>{
                         console.log(res)
-                        if(res.data.error == 'alredy exist'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Компания уже существует!'})
-                        }
-                        if(res.data.error == 'invalid data'){
-                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+
+                        if(res.data.error){
+                            this.$store.commit('setError', {typeErr: 'error', textErr: 'Ошибка!'})
                         }
                         else{
                             this.$store.commit('setCreatedItem',res.data.result)
@@ -276,6 +267,23 @@
                 else{
                     this.$store.commit('setError', {typeErr: 'error', textErr: 'Заполните форму!'})
                 }
+            },
+            deleteCompany(){
+                $api.delete(`/api/admin/company/${this.openItemId}`).then((res)=>{
+                    console.log(res)
+                    if(res.data.error){
+                        this.$store.commit('setError', {typeErr: 'error', textErr: 'Неверно заполнены данные!'})
+                    }
+                    else{
+
+                        this.$store.commit('setCreatedItem',res.data.result)
+                        this.$store.commit('setError', {typeErr: 'success', textErr: 'Вы удалили компанию!'})
+                    }
+
+                }).catch((err)=>{
+                    console.log(err)
+                    this.$store.commit('setError', {typeErr: 'error', textErr: 'Проблемы с сервером!'})
+                })
             },
            async getHeadDivisionList(){
                await $api('/api/admin/divisions').then((res)=>{
@@ -345,9 +353,9 @@
                 this.inputInn={text:this.openItemObject.inn,isError:false}
                 this.inputOgrn={text:this.openItemObject.ogrn,isError:false}
                 this.inputActualAddress={text:this.openItemObject.actual_address,isError:false}
-                this.inputIsOwner={text:this.openItemObject.is_owner,isError:false}
-                this.inputIsActive={text:this.openItemObject.is_active,isError:false}
-                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable,isError:false}
+                this.inputIsOwner={text:this.openItemObject.is_owner?'true':'',isError:false}
+                this.inputIsActive={text:this.openItemObject.is_active?'true':'',isError:false}
+                this.inputIsAutoSignEnable={text:this.openItemObject.is_auto_sign_enable?'true':'',isError:false}
             }
 
         },
